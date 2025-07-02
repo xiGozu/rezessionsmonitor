@@ -15,9 +15,9 @@ def fetch_index(ticker):
     df = yf.download(ticker, period="6mo", interval="1d")
     if not df.empty:
         df.index = pd.to_datetime(df.index)
-        return df["Close"].rename(ticker)
+        return df["Close"].copy()
     else:
-        return pd.Series(dtype=float, name=ticker)
+        return pd.Series(dtype=float)
 
 def fetch_sample_data():
     today = datetime.date.today()
@@ -36,8 +36,8 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("Aktuelle Leitindizes")
     try:
-        dax = fetch_index("^GDAXI")
-        sp500 = fetch_index("^GSPC")
+        dax = fetch_index("^GDAXI").rename("DAX")
+        sp500 = fetch_index("^GSPC").rename("SP500")
         chart_data = pd.concat([dax, sp500], axis=1)
         st.line_chart(chart_data)
     except Exception as e:
@@ -93,5 +93,5 @@ else:
 
 # --- Legende und Hinweise ---
 st.markdown("---")
-st.caption("Live-Daten für DAX, S&P 500 via Yahoo Finance. Andere Indikatoren basieren auf Beispieldaten.")
+st.caption("Live-Daten für DAX, SP500 via Yahoo Finance. Andere Indikatoren basieren auf Beispieldaten.")
 st.caption("Zukünftig werden echte Datenquellen wie Eurostat, FRED oder TradingEconomics integriert.")
