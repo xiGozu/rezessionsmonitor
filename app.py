@@ -11,13 +11,16 @@ st.set_page_config(page_title="Rezessionsmonitor", layout="wide")
 st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
 
 # --- Hilfsfunktionen ---
-def fetch_index(ticker):
-    df = yf.download(ticker, period="6mo", interval="1d")
-    if not df.empty:
-        df.index = pd.to_datetime(df.index)
-        return df["Close"].copy()
-    else:
-        return pd.Series(dtype=float)
+def fetch_index(ticker, fallback_name):
+    try:
+        df = yf.download(ticker, period="6mo", interval="1d")
+        if not df.empty:
+            df.index = pd.to_datetime(df.index)
+            return df["Close"].rename(fallback_name)
+        else:
+            return None
+    except:
+        return None
 
 def fetch_sample_data():
     today = datetime.date.today()
@@ -35,13 +38,13 @@ def fetch_sample_data():
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("Aktuelle Leitindizes")
-    try:
-        dax = fetch_index("^GDAXI").rename("DAX")
-        sp500 = fetch_index("^GSPC").rename("SP500")
+    dax = fetch_index("^GDAXI", "DAX")
+    sp500 = fetch_index("^GSPC", "SP500")
+    if dax is not None and sp500 is not None:
         chart_data = pd.concat([dax, sp500], axis=1)
         st.line_chart(chart_data)
-    except Exception as e:
-        st.warning(f"Leitindizes konnten nicht geladen werden: {str(e)}")
+    else:
+        st.warning("⚠️ Die Live-Daten für die Leitindizes konnten nicht geladen werden. Möglicherweise blockiert der Hosting-Dienst externe Datenquellen. Die Anzeige basiert vorerst auf Platzhaltern oder bleibt leer.")
 
 with col2:
     st.subheader("Frühwarn-Indikatoren")
