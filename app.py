@@ -13,7 +13,7 @@ st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
 # --- Hilfsfunktionen ---
 def fetch_index(ticker):
     df = yf.download(ticker, period="6mo", interval="1d")
-    return df["Close"]
+    return df["Close"] if not df.empty else pd.Series(dtype=float)
 
 def fetch_sample_data():
     today = datetime.date.today()
@@ -33,7 +33,11 @@ with col1:
     st.subheader("Aktuelle Leitindizes")
     dax = fetch_index("^GDAXI")
     sp500 = fetch_index("^GSPC")
-    st.line_chart(pd.DataFrame({"DAX": dax, "S&P 500": sp500}))
+    try:
+        chart_data = pd.concat([dax.rename("DAX"), sp500.rename("S&P 500")], axis=1)
+        st.line_chart(chart_data)
+    except Exception as e:
+        st.warning(f"Leitindizes konnten nicht geladen werden: {e}")
 
 with col2:
     st.subheader("Frühwarn-Indikatoren")
