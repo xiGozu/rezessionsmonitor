@@ -35,7 +35,8 @@ with col1:
     sp500 = fetch_index("^GSPC")
     try:
         chart_data = pd.concat([dax.rename("DAX"), sp500.rename("S&P 500")], axis=1)
-        st.line_chart(chart_data)
+        chart_data.index = pd.to_datetime(chart_data.index)
+        st.line_chart(data=chart_data)
     except Exception as e:
         st.warning(f"Leitindizes konnten nicht geladen werden: {e}")
 
