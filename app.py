@@ -1,0 +1,67 @@
+# app.py
+import streamlit as st
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import datetime
+from sklearn.linear_model import LogisticRegression
+import matplotlib.pyplot as plt
+
+st.set_page_config(page_title="Rezessionsmonitor", layout="wide")
+st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
+
+# --- Hilfsfunktionen ---
+def fetch_index(ticker):
+    df = yf.download(ticker, period="6mo", interval="1d")
+    return df["Close"]
+
+def fetch_sample_data():
+    today = datetime.date.today()
+    dates = pd.date_range(end=today, periods=6, freq='M')
+    data = pd.DataFrame({
+        "Datum": dates,
+        "EMI": [49, 48, 47, 46, 45, 44],
+        "Arbeitslosenquote": [5.1, 5.3, 5.4, 5.6, 5.9, 6.1],
+        "Zinskurve": [0.3, 0.1, -0.2, -0.4, -0.6, -0.8],
+        "Industrieproduktion": [1.2, 0.8, 0.5, -0.3, -1.1, -2.0]
+    })
+    return data
+
+# --- Datenabruf und Anzeige ---
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("Aktuelle Leitindizes")
+    dax = fetch_index("^GDAXI")
+    sp500 = fetch_index("^GSPC")
+    st.line_chart(pd.DataFrame({"DAX": dax, "S&P 500": sp500}))
+
+with col2:
+    st.subheader("Frühwarn-Indikatoren")
+    df = fetch_sample_data()
+    st.dataframe(df.set_index("Datum"))
+
+# --- Prognosemodell (vereinfachtes Beispiel) ---
+df_model = df.copy()
+df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
+features = ["EMI", "Arbeitslosenquote", "Zinskurve"]
+X = df_model[features]
+y = df_model["Rezession"]
+model = LogisticRegression()
+model.fit(X, y)
+
+# Aktuelle Werte zur Prognose
+aktuell = df_model.iloc[-1][features].values.reshape(1, -1)
+p_rezession = model.predict_proba(aktuell)[0][1]
+
+st.subheader("🔢 Rezessionswahrscheinlichkeit")
+st.metric(label="Deutschland / Eurozone (vereinfachtes Modell)", value=f"{p_rezession*100:.1f} %", delta=None)
+
+# --- Ampelanzeige ---
+st.subheader("🚨 Risikobewertung")
+ampel = "🔴 Hoch" if p_rezession > 0.6 else ("🟡 Mittel" if p_rezession > 0.3 else "🟢 Niedrig")
+st.markdown(f"**Aktuelles Rezessionsrisiko:** {ampel}")
+
+# --- Legende und Hinweise ---
+st.markdown("---")
+st.caption("Live-Daten für DAX, S&P 500 via Yahoo Finance. Andere Indikatoren basieren auf Beispieldaten.")
+st.caption("Zukünftig werden echte Datenquellen wie Eurostat, FRED oder TradingEconomics integriert.")
