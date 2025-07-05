@@ -214,7 +214,7 @@ for m in maßnahmen:
         st.markdown(f"**🛠️ {m['titel']} – Priorität: {m['priorität']}**  ")
         st.markdown(f"{m['beschreibung']}  ")
         st.markdown(f"🔄 *Möglicher Effekt auf Aktien:* {m['effekt']}  ")
-        st.markdown(f"📈 *Beispielhafte Profiteure:* {m['aktien']}
+        st.markdown(f"📈 *Beispielhafte Profiteure:* {m['aktien']}")}
 ")
 
 # --- Legende und Hinweise ---
