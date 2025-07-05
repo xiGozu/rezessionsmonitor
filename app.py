@@ -156,11 +156,22 @@ bewertung_df = pd.DataFrame({
     "Indikator": [
         "Einkaufsmanagerindex (EMI)",
         "Arbeitslosenquote",
-        "Zinskurve (10J - 2J)"
+        "Zinskurve (10J - 2J)",
+        "Industrieproduktion"
     ],
     "Details": [
         f"Letzte 3 Werte: {emi_wert}",
         f"Anstieg 3 Monate: {arbeitslosen_start:.2f}% → {arbeitslosen_aktuell:.2f}% ({diff_arbeitslos:+.2f})",
+        f"Letzte 3 Werte: {zins_wert}",
+        f"Letzter Wert: {df['Industrieproduktion'].iloc[-1]:.2f}%"
+    ],
+    "Bewertung": [
+        "⚠️ kritisch – 3 Werte unter 48" if emi_kritisch else "✅ stabil",
+        "⚠️ steigend – über 0.5 Punkte" if diff_arbeitslos > 0.5 else "✅ moderat",
+        "⚠️ invers – alle negativ" if zins_invertiert else "✅ normal",
+        "⚠️ negativ – Rückgang" if df['Industrieproduktion'].iloc[-1] < 0 else "✅ positiv"
+    ]
+})",
         f"Letzte 3 Werte: {zins_wert}"
     ],
     "Bewertung": [
