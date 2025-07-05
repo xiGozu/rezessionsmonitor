@@ -1,0 +1,23 @@
+name: Daten aktualisieren
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install pandas numpy
+      - run: python update_data.py
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/indikatoren.csv
+          git commit -m "📈 Automatisches Datenupdate" || echo "Keine Änderungen"
+          git push
