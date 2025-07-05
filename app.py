@@ -38,7 +38,7 @@ heute = datetime.date.today()
 if p_rezession > 0.6:
     ampel = "🔴 Hoch"
     prog_date = heute + datetime.timedelta(days=90)
-    rez_text = rez_text
+    rez_text = f"Wahrscheinliche Rezession bis {prog_date.strftime('%B %Y')}"
 
 
 
