@@ -164,23 +164,29 @@ st.subheader("🛠️ Wirtschaftspolitische Maßnahmen zur Abschwächung einer R
 st.markdown("""
 Um eine drohende Rezession abzumildern oder zu verzögern, kommen insbesondere folgende Maßnahmen infrage:
 
-- **Senkung der Leitzinsen (Geldpolitik):** Zentralbanken können die Kreditkosten senken, um Investitionen und Konsum anzuregen.  
+- **Senkung der Leitzinsen (Geldpolitik) – Priorität: Hoch**  
+  Zentralbanken können die Kreditkosten senken, um Investitionen und Konsum anzuregen.  
   🔄 *Möglicher Effekt auf Aktien:* Günstigeres Kapital fördert Unternehmensgewinne, Aktienkurse steigen oft.
 
-- **Quantitative Lockerung:** Zentralbanken kaufen Anleihen oder andere Wertpapiere, um Liquidität ins Finanzsystem zu pumpen.  
-  🔄 *Möglicher Effekt auf Aktien:* Höhere Liquidität fließt häufig auch in Aktienmärkte – besonders wachstumsorientierte Titel profitieren.
-
-- **Steuersenkungen:** Durch mehr verfügbares Einkommen können private Haushalte und Unternehmen mehr konsumieren oder investieren.  
-  🔄 *Möglicher Effekt auf Aktien:* Positive Effekte auf Konsum- und Industriesektoren, insbesondere zyklische Aktien.
-
-- **Staatliche Investitionsprogramme:** Infrastrukturprojekte, Digitalisierung oder Energieprojekte schaffen kurzfristig Nachfrage und Arbeitsplätze.  
-  🔄 *Möglicher Effekt auf Aktien:* Bau-, Maschinenbau-, Energie- und Rohstoffunternehmen können profitieren.
-
-- **Kurzarbeitergeld und Arbeitsmarktprogramme:** Sichern Beschäftigung und verhindern massive Kaufkraftverluste.  
+- **Kurzarbeitergeld und Arbeitsmarktprogramme – Priorität: Hoch**  
+  Sichern Beschäftigung und verhindern massive Kaufkraftverluste.  
   🔄 *Möglicher Effekt auf Aktien:* Stützt Konsumgüter- und Einzelhandelsunternehmen durch stabile Nachfrage.
 
-- **Unterstützung für Unternehmen:** Kredite, Bürgschaften oder Zuschüsse zur Stabilisierung gefährdeter Branchen.  
+- **Unterstützung für Unternehmen – Priorität: Hoch**  
+  Kredite, Bürgschaften oder Zuschüsse zur Stabilisierung gefährdeter Branchen.  
   🔄 *Möglicher Effekt auf Aktien:* Reduziert Insolvenzrisiken und stabilisiert besonders anfällige Branchen wie Tourismus oder Industrie.
+
+- **Staatliche Investitionsprogramme – Priorität: Mittel**  
+  Infrastrukturprojekte, Digitalisierung oder Energieprojekte schaffen kurzfristig Nachfrage und Arbeitsplätze.  
+  🔄 *Möglicher Effekt auf Aktien:* Bau-, Maschinenbau-, Energie- und Rohstoffunternehmen können profitieren.
+
+- **Steuersenkungen – Priorität: Mittel**  
+  Durch mehr verfügbares Einkommen können private Haushalte und Unternehmen mehr konsumieren oder investieren.  
+  🔄 *Möglicher Effekt auf Aktien:* Positive Effekte auf Konsum- und Industriesektoren, insbesondere zyklische Aktien.
+
+- **Quantitative Lockerung – Priorität: Niedrig**  
+  Zentralbanken kaufen Anleihen oder andere Wertpapiere, um Liquidität ins Finanzsystem zu pumpen.  
+  🔄 *Möglicher Effekt auf Aktien:* Höhere Liquidität fließt häufig auch in Aktienmärkte – besonders wachstumsorientierte Titel profitieren.
 
 Diese Maßnahmen werden häufig kombiniert, um die gesamtwirtschaftliche Nachfrage gezielt zu stützen.
 """)
