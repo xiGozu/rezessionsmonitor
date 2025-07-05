@@ -9,11 +9,6 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="Rezessionsmonitor", layout="wide")
 st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
 
-# Kopfzeile mit Prognose einfügen (nachdem ampel & rez_text bekannt sind)
-
-
-
-
 # --- Hilfsfunktionen ---
 def fetch_sample_data():
     today = datetime.date.today()
@@ -45,12 +40,7 @@ if p_rezession > 0.6:
     prog_date = heute + datetime.timedelta(days=90)
     rez_text = rez_text
 
-st.markdown(f"""
-<div style='display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: #f5f5f5; border-radius: 10px;'>
-    <h2 style='margin: 0;'>🚦 Aktuelles Rezessionsrisiko: {ampel}</h2>
-    <h4 style='margin: 0;'>{rez_text}</h4>
-</div>
-""", unsafe_allow_html=True)
+
 
 st.markdown(f"""
 <div style='display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: #f5f5f5; border-radius: 10px;'>
@@ -154,12 +144,19 @@ st.markdown("### 📅 Erwarteter Rezessionszeitraum")
 heute = datetime.date.today()
 if p_rezession > 0.6:
     prog_date = heute + datetime.timedelta(days=90)
-    st.markdown(f"Eine Rezession ist wahrscheinlich bis **{prog_date.strftime('%B %Y')}**.")
+    rez_text = f"Wahrscheinliche Rezession bis {prog_date.strftime('%B %Y')}"
 elif p_rezession > 0.3:
     prog_date = heute + datetime.timedelta(days=180)
-    st.markdown(f"Eine Rezession ist möglich bis **{prog_date.strftime('%B %Y')}**, falls sich der Trend verstärkt.")
+    rez_text = f"Mögliche Rezession bis {prog_date.strftime('%B %Y')}"
 else:
-    st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")
+    rez_text = "Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen."
+
+st.markdown(f"""
+<div style='display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: #f5f5f5; border-radius: 10px;'>
+    <h2 style='margin: 0;'>🚦 Aktuelles Rezessionsrisiko: {ampel}</h2>
+    <h4 style='margin: 0;'>{rez_text}</h4>
+</div>
+""", unsafe_allow_html=True)
 
 # --- Maßnahmen gegen die Rezession ---
 st.markdown("---")
