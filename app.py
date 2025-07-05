@@ -175,12 +175,15 @@ maßnahmen = [
     }
 ]
 
-for m in maßnahmen:
-    if option == "Alle Maßnahmen" or m["priorität"] in option:
-        st.markdown(f"**🛠️ {m['titel']} – Priorität: {m['priorität']}**")
-        st.markdown(f"{m['beschreibung']}")
-        st.markdown(f"🔄 *Möglicher Effekt auf Aktien:* {m['effekt']}")
-        st.markdown(f"📈 *Beispielhafte Profiteure:* {m['aktien']}")
+df_ma = pd.DataFrame([m for m in maßnahmen if option == "Alle Maßnahmen" or m["priorität"] in option])
+st.markdown("### 💡 Übersicht der Maßnahmen")
+st.dataframe(df_ma.rename(columns={
+    "titel": "Maßnahme",
+    "priorität": "Priorität",
+    "beschreibung": "Beschreibung",
+    "effekt": "Wirkung auf Aktien",
+    "aktien": "Aktienempfehlungen"
+}))
 
 # --- Legende und Hinweise ---
 st.markdown("---")
