@@ -161,35 +161,61 @@ else:
 # --- Maßnahmen gegen die Rezession ---
 st.markdown("---")
 st.subheader("🛠️ Wirtschaftspolitische Maßnahmen zur Abschwächung einer Rezession")
-st.markdown("""
-Um eine drohende Rezession abzumildern oder zu verzögern, kommen insbesondere folgende Maßnahmen infrage:
 
-- **Senkung der Leitzinsen (Geldpolitik) – Priorität: Hoch**  
-  Zentralbanken können die Kreditkosten senken, um Investitionen und Konsum anzuregen.  
-  🔄 *Möglicher Effekt auf Aktien:* Günstigeres Kapital fördert Unternehmensgewinne, Aktienkurse steigen oft.
+option = st.selectbox("🔍 Maßnahmen anzeigen nach ...", ["Alle Maßnahmen", "Nur hohe Priorität", "Nur mittlere Priorität", "Nur niedrige Priorität"])
 
-- **Kurzarbeitergeld und Arbeitsmarktprogramme – Priorität: Hoch**  
-  Sichern Beschäftigung und verhindern massive Kaufkraftverluste.  
-  🔄 *Möglicher Effekt auf Aktien:* Stützt Konsumgüter- und Einzelhandelsunternehmen durch stabile Nachfrage.
+maßnahmen = [
+    {
+        "titel": "Senkung der Leitzinsen (Geldpolitik)",
+        "priorität": "Hoch",
+        "beschreibung": "Zentralbanken können die Kreditkosten senken, um Investitionen und Konsum anzuregen.",
+        "effekt": "Günstigeres Kapital fördert Unternehmensgewinne, Aktienkurse steigen oft.",
+        "aktien": "Banken, Immobilien, Wachstumsaktien (z. B. Tech)"
+    },
+    {
+        "titel": "Kurzarbeitergeld und Arbeitsmarktprogramme",
+        "priorität": "Hoch",
+        "beschreibung": "Sichern Beschäftigung und verhindern massive Kaufkraftverluste.",
+        "effekt": "Stützt Konsumgüter- und Einzelhandelsunternehmen durch stabile Nachfrage.",
+        "aktien": "Einzelhandel, Nahrungsmittel, Basiskonsum (z. B. Nestlé, Walmart)"
+    },
+    {
+        "titel": "Unterstützung für Unternehmen",
+        "priorität": "Hoch",
+        "beschreibung": "Kredite, Bürgschaften oder Zuschüsse zur Stabilisierung gefährdeter Branchen.",
+        "effekt": "Reduziert Insolvenzrisiken und stabilisiert besonders anfällige Branchen wie Tourismus oder Industrie.",
+        "aktien": "Luftfahrt, Industrie, Logistik (z. B. Lufthansa, Siemens)"
+    },
+    {
+        "titel": "Staatliche Investitionsprogramme",
+        "priorität": "Mittel",
+        "beschreibung": "Infrastrukturprojekte, Digitalisierung oder Energieprojekte schaffen kurzfristig Nachfrage und Arbeitsplätze.",
+        "effekt": "Bau-, Maschinenbau-, Energie- und Rohstoffunternehmen können profitieren.",
+        "aktien": "Bau, Solar, Wasserstoff (z. B. HeidelbergCement, Siemens Energy)"
+    },
+    {
+        "titel": "Steuersenkungen",
+        "priorität": "Mittel",
+        "beschreibung": "Durch mehr verfügbares Einkommen können private Haushalte und Unternehmen mehr konsumieren oder investieren.",
+        "effekt": "Positive Effekte auf Konsum- und Industriesektoren, insbesondere zyklische Aktien.",
+        "aktien": "Auto, Konsum, Technologie (z. B. BMW, Adidas, Apple)"
+    },
+    {
+        "titel": "Quantitative Lockerung",
+        "priorität": "Niedrig",
+        "beschreibung": "Zentralbanken kaufen Anleihen oder andere Wertpapiere, um Liquidität ins Finanzsystem zu pumpen.",
+        "effekt": "Höhere Liquidität fließt häufig auch in Aktienmärkte – besonders wachstumsorientierte Titel profitieren.",
+        "aktien": "Tech, Growth-ETFs, Nasdaq (z. B. Amazon, Nvidia)"
+    }
+]
 
-- **Unterstützung für Unternehmen – Priorität: Hoch**  
-  Kredite, Bürgschaften oder Zuschüsse zur Stabilisierung gefährdeter Branchen.  
-  🔄 *Möglicher Effekt auf Aktien:* Reduziert Insolvenzrisiken und stabilisiert besonders anfällige Branchen wie Tourismus oder Industrie.
-
-- **Staatliche Investitionsprogramme – Priorität: Mittel**  
-  Infrastrukturprojekte, Digitalisierung oder Energieprojekte schaffen kurzfristig Nachfrage und Arbeitsplätze.  
-  🔄 *Möglicher Effekt auf Aktien:* Bau-, Maschinenbau-, Energie- und Rohstoffunternehmen können profitieren.
-
-- **Steuersenkungen – Priorität: Mittel**  
-  Durch mehr verfügbares Einkommen können private Haushalte und Unternehmen mehr konsumieren oder investieren.  
-  🔄 *Möglicher Effekt auf Aktien:* Positive Effekte auf Konsum- und Industriesektoren, insbesondere zyklische Aktien.
-
-- **Quantitative Lockerung – Priorität: Niedrig**  
-  Zentralbanken kaufen Anleihen oder andere Wertpapiere, um Liquidität ins Finanzsystem zu pumpen.  
-  🔄 *Möglicher Effekt auf Aktien:* Höhere Liquidität fließt häufig auch in Aktienmärkte – besonders wachstumsorientierte Titel profitieren.
-
-Diese Maßnahmen werden häufig kombiniert, um die gesamtwirtschaftliche Nachfrage gezielt zu stützen.
-""")
+for m in maßnahmen:
+    if option == "Alle Maßnahmen" or m["priorität"] in option:
+        st.markdown(f"**🛠️ {m['titel']} – Priorität: {m['priorität']}**  ")
+        st.markdown(f"{m['beschreibung']}  ")
+        st.markdown(f"🔄 *Möglicher Effekt auf Aktien:* {m['effekt']}  ")
+        st.markdown(f"📈 *Beispielhafte Profiteure:* {m['aktien']}
+")
 
 # --- Legende und Hinweise ---
 st.markdown("---")
