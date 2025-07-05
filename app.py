@@ -82,9 +82,9 @@ st.dataframe(bewertung_df)
 
 st.markdown("""
 #### Hinweise zur Bewertungsskala:
-- 🔴 **Kritisch**: Historisch oft mit Rezession assoziiert, schnelle Gegenmaßnahmen ratsam
-- 🟡 **Abnehmende Dynamik**: Trendbeobachtung erforderlich, könnte in kritische Zone kippen
-- 🟢 **Unauffällig**: Keine akuten Anzeichen einer wirtschaftlichen Abschwächung
+- Kritisch: Historisch oft mit Rezession assoziiert, schnelle Gegenmaßnahmen ratsam
+- Abnehmende Dynamik: Trendbeobachtung erforderlich, könnte in kritische Zone kippen
+- Unauffällig: Keine akuten Anzeichen einer wirtschaftlichen Abschwächung
 """)
 
 # --- Maßnahmen gegen Rezession ---
