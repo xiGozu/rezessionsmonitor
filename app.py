@@ -7,7 +7,8 @@ from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Rezessionsmonitor", layout="wide")
-df_model = fetch_sample_data()
+df = fetch_sample_data()
+df_model = df.copy()
 df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
 features = ["EMI", "Arbeitslosenquote", "Zinskurve"]
 X = df_model[features]
