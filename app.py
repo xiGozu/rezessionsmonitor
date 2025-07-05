@@ -34,10 +34,21 @@ with col1:
     st.markdown("""
     #### 📘 Beschreibung der Frühwarn-Indikatoren
 
-    **EMI (Einkaufsmanagerindex):** Werte < 47 deuten auf Rezession hin.  
-    **Arbeitslosenquote:** +0,5 % in wenigen Monaten = Warnsignal.  
-    **Zinskurve:** < -0,25 % für längere Zeit = starkes Rezessionssignal.  
-    **Industrieproduktion:** Drei Monate unter 0 % = erhöhtes Risiko.
+    **EMI (Einkaufsmanagerindex):**
+    Ein zentraler Frühindikator für die wirtschaftliche Aktivität in der Industrie. Werte über 50 signalisieren Expansion, Werte unter 50 Schrumpfung.
+    **Rezessionssignal:** Bei einem anhaltenden Rückgang unter 47 über mehrere Monate steigt die Rezessionswahrscheinlichkeit deutlich.
+
+    **Arbeitslosenquote:**
+    Gibt den prozentualen Anteil der arbeitslosen Personen an der Erwerbsbevölkerung an. Ein konstanter Anstieg über mehrere Monate signalisiert wirtschaftliche Schwäche.
+    **Rezessionssignal:** Steigt die Quote um mehr als 0,5 Prozentpunkte innerhalb von 3–6 Monaten, gilt das als Warnzeichen.
+
+    **Zinskurve (10J - 2J Staatsanleihen):**
+    Differenz zwischen langfristigen und kurzfristigen Zinssätzen. Eine normale Kurve ist positiv (langfristige Zinsen höher). Eine inverse Zinskurve (negative Werte) zeigt, dass Investoren kurzfristig höhere Risiken sehen.
+    **Rezessionssignal:** Eine invertierte Kurve über mehrere Wochen (z. B. < -0,25 %) war in der Vergangenheit ein sehr verlässlicher Frühindikator.
+
+    **Industrieproduktion (Veränderung ggü. Vorjahr):**
+    Misst die reale Produktion der Industrie im Vergleich zum Vorjahresmonat. Rückgänge deuten auf sinkende Nachfrage und reduzierte Wirtschaftstätigkeit hin.
+    **Rezessionssignal:** Wenn der Wert drei Monate in Folge negativ ist (unter 0 %), ist dies ein starkes Alarmsignal.
     """)
 
 # --- Spalte 2: Prognose, Risikoampel, Rezessionstermin ---
