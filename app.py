@@ -130,16 +130,34 @@ Wenn die kurzfristigen Zinsen höher sind als die langfristigen, spricht man von
 """)
 
 # --- Aktuelle Werte der Indikatoren ---
-st.markdown("### 📊 Aktuelle Frühwarn-Indikatoren (letzte Werte)")
-indikatoren_df = df.tail(1).copy()
-indikatoren_df = indikatoren_df.rename(columns={
+st.markdown("### 📊 Frühwarn-Indikatoren – Verlauf & Bewertung")
+verlauf_df = df.rename(columns={
     "Datum": "Datum",
     "EMI": "Einkaufsmanagerindex (EMI)",
     "Arbeitslosenquote": "Arbeitslosenquote (%)",
     "Zinskurve": "Zinskurve (10J - 2J)",
     "Industrieproduktion": "Industrieproduktion (%)"
 }).set_index("Datum")
-st.dataframe(indikatoren_df.style.format("{:.2f}"))
+st.dataframe(verlauf_df.style.format("{:.2f}"))
+
+# --- Indikatorbewertung ---
+st.markdown("### 🧾 Bewertung der Frühwarn-Indikatoren")
+bewertung = []
+
+# EMI-Auswertung
+emi_kritisch = (df["EMI"].tail(3) < 48).all()
+bewertung.append(f"**Einkaufsmanagerindex (EMI):** {'⚠️ kritisch' if emi_kritisch else '✅ stabil'}  ")
+
+# Arbeitslosenquote-Auswertung
+diff_arbeitslos = df["Arbeitslosenquote"].iloc[-1] - df["Arbeitslosenquote"].iloc[-4]
+bewertung.append(f"**Arbeitslosenquote:** {'⚠️ steigend' if diff_arbeitslos > 0.5 else '✅ moderat'}  ")
+
+# Zinskurve-Auswertung
+zins_invertiert = (df["Zinskurve"].tail(3) < 0).all()
+bewertung.append(f"**Zinskurve:** {'⚠️ invers' if zins_invertiert else '✅ normal'}  ")
+
+for b in bewertung:
+    st.markdown(b)
 
 # --- Legende und Hinweise ---
 st.markdown("---")
