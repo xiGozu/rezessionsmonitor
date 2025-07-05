@@ -86,8 +86,6 @@ st.markdown("""
 - Abnehmende Dynamik: Trendbeobachtung erforderlich, könnte in kritische Zone kippen
 - Unauffällig: Keine akuten Anzeichen einer wirtschaftlichen Abschwächung
 """)
-""")
-
 # --- Maßnahmen gegen Rezession ---
 st.header("🛠️ Mögliche staatliche Gegenmaßnahmen & Auswirkungen auf Aktien")
 maßnahmen = [
