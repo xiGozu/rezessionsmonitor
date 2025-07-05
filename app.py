@@ -9,7 +9,27 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="Rezessionsmonitor", layout="wide")
 st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
 
-# --- Prognoseblock für Kopfzeile ---
+st.markdown(f"""
+<div style='display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: #f5f5f5; border-radius: 10px;'>
+    <h2 style='margin: 0;'>🚦 Aktuelles Rezessionsrisiko: {ampel}</h2>
+    <h4 style='margin: 0;'>{rez_text}</h4>
+</div>
+""", unsafe_allow_html=True)
+
+# --- Hilfsfunktionen ---
+def fetch_sample_data():
+    today = datetime.date.today()
+    dates = pd.date_range(end=today, periods=6, freq='M')
+    data = pd.DataFrame({
+        "Datum": dates,
+        "EMI": [49, 48, 47, 46, 45, 44],
+        "Arbeitslosenquote": [5.1, 5.3, 5.4, 5.6, 5.9, 6.1],
+        "Zinskurve": [0.3, 0.1, -0.2, -0.4, -0.6, -0.8],
+        "Industrieproduktion": [1.2, 0.8, 0.5, -0.3, -1.1, -2.0]
+    })
+    return data
+
+# --- Prognoseberechnung nach Funktionsdefinition ---
 df = fetch_sample_data()
 df_model = df.copy()
 df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
@@ -40,19 +60,6 @@ st.markdown(f"""
     <h4 style='margin: 0;'>{rez_text}</h4>
 </div>
 """, unsafe_allow_html=True)
-
-# --- Hilfsfunktionen ---
-def fetch_sample_data():
-    today = datetime.date.today()
-    dates = pd.date_range(end=today, periods=6, freq='M')
-    data = pd.DataFrame({
-        "Datum": dates,
-        "EMI": [49, 48, 47, 46, 45, 44],
-        "Arbeitslosenquote": [5.1, 5.3, 5.4, 5.6, 5.9, 6.1],
-        "Zinskurve": [0.3, 0.1, -0.2, -0.4, -0.6, -0.8],
-        "Industrieproduktion": [1.2, 0.8, 0.5, -0.3, -1.1, -2.0]
-    })
-    return data
 
 # --- Layout: Zwei Spalten für Übersichtlichkeit ---
 col1, col2 = st.columns([1, 1])
