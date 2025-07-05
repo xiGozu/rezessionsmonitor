@@ -1,6 +1,5 @@
 # app.py
 import streamlit as st
-import yfinance as yf
 import pandas as pd
 import numpy as np
 import datetime
@@ -11,17 +10,6 @@ st.set_page_config(page_title="Rezessionsmonitor", layout="wide")
 st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
 
 # --- Hilfsfunktionen ---
-def fetch_index(ticker, fallback_name):
-    try:
-        df = yf.download(ticker, period="6mo", interval="1d")
-        if not df.empty:
-            df.index = pd.to_datetime(df.index)
-            return df["Close"].rename(fallback_name)
-        else:
-            return None
-    except:
-        return None
-
 def fetch_sample_data():
     today = datetime.date.today()
     dates = pd.date_range(end=today, periods=6, freq='M')
@@ -34,22 +22,10 @@ def fetch_sample_data():
     })
     return data
 
-# --- Datenabruf und Anzeige ---
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("Aktuelle Leitindizes")
-    dax = fetch_index("^GDAXI", "DAX")
-    sp500 = fetch_index("^GSPC", "SP500")
-    if dax is not None and sp500 is not None:
-        chart_data = pd.concat([dax, sp500], axis=1)
-        st.line_chart(chart_data)
-    else:
-        st.warning("⚠️ Die Live-Daten für die Leitindizes konnten nicht geladen werden. Möglicherweise blockiert der Hosting-Dienst externe Datenquellen. Die Anzeige basiert vorerst auf Platzhaltern oder bleibt leer.")
-
-with col2:
-    st.subheader("Frühwarn-Indikatoren")
-    df = fetch_sample_data()
-    st.dataframe(df.set_index("Datum"))
+# --- Frühwarn-Indikatoren ---
+st.subheader("Frühwarn-Indikatoren")
+df = fetch_sample_data()
+st.dataframe(df.set_index("Datum"))
 
 # --- Erläuterung der Frühwarn-Indikatoren ---
 st.markdown("""
@@ -105,7 +81,39 @@ elif p_rezession > 0.3:
 else:
     st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")
 
+# --- Empfehlungen für rezessionsresistente Sektoren ---
+st.subheader("📈 Sektor-Empfehlungen bei Rezessionsgefahr")
+if p_rezession > 0.6:
+    st.markdown("""
+    Bei hohem Rezessionsrisiko gelten folgende Bereiche als relativ widerstandsfähig:
+
+    - **Basiskonsum (Consumer Staples):** Lebensmittel, Haushaltswaren, Hygieneprodukte  
+      *Beispiele:* Nestlé, Procter & Gamble, Unilever
+    
+    - **Gesundheitswesen (Healthcare):** Medikamente, Krankenhäuser, Medizintechnik  
+      *Beispiele:* Pfizer, Roche, Johnson & Johnson
+
+    - **Versorger (Utilities):** Strom, Wasser, Gas – stabile Einnahmen durch Grundversorgung  
+      *Beispiele:* E.ON, RWE, NextEra Energy
+
+    - **Gold & Edelmetalle:** Stabil in Krisenzeiten – profitieren von Unsicherheit und fallenden Realzinsen
+
+    - **Hochqualitative Staatsanleihen:** Besonders bei erwarteten Zinssenkungen attraktiv
+    """)
+elif p_rezession > 0.3:
+    st.markdown("""
+    Es besteht ein moderates Risiko für eine wirtschaftliche Abschwächung. Folgende Sektoren könnten bereits stabilisierend wirken:
+
+    - **Basiskonsum & Gesundheit:** Erste Umschichtungen in defensivere Titel sind möglich
+    - **Cash & Geldmarkt-ETFs:** Erhöhte Liquidität sorgt für Flexibilität
+    - **Große Technologieunternehmen mit stabilen Erträgen:** z. B. Microsoft, Apple
+    """)
+else:
+    st.markdown("""
+    Derzeit kein akuter Handlungsbedarf. Zyklische Branchen wie Industrie, Technologie und Konsumgüter profitieren bei Wachstum.
+    Dennoch sollte ein schrittweiser Aufbau defensiver Positionen langfristig erwogen werden.
+    """)
+
 # --- Legende und Hinweise ---
 st.markdown("---")
-st.caption("Live-Daten für DAX, SP500 via Yahoo Finance. Andere Indikatoren basieren auf Beispieldaten.")
-st.caption("Zukünftig werden echte Datenquellen wie Eurostat, FRED oder TradingEconomics integriert.")
+st.caption("Frühwarn-Indikatoren basieren derzeit auf statischen Werten. Live-Integration folgt.")
