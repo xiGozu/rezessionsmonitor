@@ -45,6 +45,10 @@ if p_rezession > 0.6:
 color = "#d9534f" if "🔴" in ampel else ("#f0ad4e" if "🟡" in ampel else "#5cb85c")
 st.markdown(f"""
 <div style='display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: {color}; border-radius: 10px;'>
+    <h2 style='margin: 0; color: white;'>🚦 Aktuelles Rezessionsrisiko: {ampel}</h2>
+    <h4 style='margin: 0; color: white;'>{rez_text}</h4>
+</div>
+""", unsafe_allow_html=True)
 
 # --- Layout: Zwei Spalten für Übersichtlichkeit ---
 col1, col2 = st.columns([1, 1])
@@ -64,7 +68,7 @@ with col1:
 
     **Arbeitslosenquote:**
     Gibt den prozentualen Anteil der arbeitslosen Personen an der Erwerbsbevölkerung an. Ein konstanter Anstieg über mehrere Monate signalisiert wirtschaftliche Schwäche.
-    **Rezessionssignal:** Steigt die Quote um mehr als 0,5 Prozentpunkte innerhalb von 3–6 Monaten, gilt das als Warnzeichen.
+    **Rezessionssignal:** Steigt die Quote um mehr als 0,5 Prozentpunkte innerhalb von 3-6 Monaten, gilt das als Warnzeichen.
 
     **Zinskurve (10J - 2J Staatsanleihen):**
     Differenz zwischen langfristigen und kurzfristigen Zinssätzen. Eine normale Kurve ist positiv (langfristige Zinsen höher). Eine inverse Zinskurve (negative Werte) zeigt, dass Investoren kurzfristig höhere Risiken sehen.
