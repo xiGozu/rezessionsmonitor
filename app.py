@@ -50,25 +50,29 @@ st.markdown(f"""
 st.header("Frühwarnindikatoren – Zeitreihe")
 st.dataframe(df.set_index("Datum"))
 
+st.markdown("""
+### Was bedeuten die Indikatoren?
+- **Einkaufsmanagerindex (EMI):** Ein Wert unter 50 signalisiert Schrumpfung. Ein starker Rückgang ist oft ein Frühindikator.
+- **Arbeitslosenquote:** Steigt sie innerhalb weniger Monate um 0,5 % oder mehr, deutet das oft auf eine bevorstehende Rezession hin.
+- **Zinskurve (10y - 2y):** Eine Inversion (negativer Wert) ist in der Vergangenheit häufig ein zuverlässiger Frühindikator gewesen.
+- **Industrieproduktion:** Rückläufige Produktionszahlen deuten auf eine konjunkturelle Schwächephase hin.
+""")
+
 # --- Bewertung der einzelnen Indikatoren ---
 bewertungen = []
 
-# EMI
 emi_change = df.iloc[-1]["EMI"] - df.iloc[-2]["EMI"]
 emi_bewertung = "🔴 Sinkt deutlich" if emi_change < -1 else ("🟡 Leicht rückläufig" if emi_change < 0 else "🟢 Stabil")
 bewertungen.append(("Einkaufsmanagerindex (EMI)", f"Veränderung: {emi_change:.2f}", emi_bewertung))
 
-# Arbeitslosenquote
 arbeitslosen_diff = df.iloc[-1]["Arbeitslosenquote"] - df.iloc[-2]["Arbeitslosenquote"]
 arbeitslosen_bewertung = "🔴 Steigt deutlich" if arbeitslosen_diff > 0.3 else ("🟡 Steigt leicht" if arbeitslosen_diff > 0.1 else "🟢 Stabil")
 bewertungen.append(("Arbeitslosenquote", f"Veränderung: {arbeitslosen_diff:.2f} %-Punkte", arbeitslosen_bewertung))
 
-# Zinskurve
 zins = df.iloc[-1]["Zinskurve"]
 zins_bewertung = "🔴 Invertiert" if zins < 0 else ("🟡 Flach" if zins < 0.2 else "🟢 Normal")
 bewertungen.append(("Zinskurve", f"Letzter Wert: {zins:.2f}%", zins_bewertung))
 
-# Industrieproduktion
 ip_diff = df.iloc[-1]["Industrieproduktion"] - df.iloc[-2]["Industrieproduktion"]
 ip_bewertung = "🔴 Schrumpft" if ip_diff < -0.5 else ("🟡 Schwächer" if ip_diff < 0 else "🟢 Wächst")
 bewertungen.append(("Industrieproduktion", f"Veränderung: {ip_diff:.2f}%", ip_bewertung))
@@ -76,3 +80,35 @@ bewertungen.append(("Industrieproduktion", f"Veränderung: {ip_diff:.2f}%", ip_b
 bewertung_df = pd.DataFrame(bewertungen, columns=["Indikator", "Veränderung / Stand", "Bewertung"])
 st.header("📊 Bewertung der Frühwarnindikatoren")
 st.dataframe(bewertung_df)
+
+# --- Maßnahmen gegen Rezession ---
+st.header("🛠️ Mögliche staatliche Gegenmaßnahmen & Auswirkungen auf Aktien")
+maßnahmen = [
+    {
+        "maßnahme": "📉 Zinssenkung durch die Zentralbank",
+        "wirkung": "Kreditvergabe wird stimuliert, Konsum und Investitionen steigen",
+        "aktien": "Wachstumsaktien, Immobilien, Tech"
+    },
+    {
+        "maßnahme": "🏗️ Infrastrukturprogramme",
+        "wirkung": "Staat investiert in Bau und öffentliche Projekte",
+        "aktien": "Bau, Maschinenbau, Grundstoffe"
+    },
+    {
+        "maßnahme": "💸 Steuererleichterungen",
+        "wirkung": "Mehr verfügbares Einkommen für Haushalte und Unternehmen",
+        "aktien": "Konsumgüter, Einzelhandel, Banken"
+    },
+    {
+        "maßnahme": "🏦 Stützung von Banken und Kreditmärkten",
+        "wirkung": "Finanzsystem bleibt stabil, Vertrauen wird gesichert",
+        "aktien": "Banken, Versicherungen"
+    }
+]
+
+maßnahmen_df = pd.DataFrame(maßnahmen)
+st.dataframe(maßnahmen_df.rename(columns={
+    "maßnahme": "Maßnahme",
+    "wirkung": "Erwartete Wirkung",
+    "aktien": "Mögliche Aktienprofiteure"
+}))
