@@ -124,40 +124,6 @@ with col2:
     else:
         st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")
 
-# --- Empfehlungen für rezessionsresistente Sektoren ---
-st.markdown("---")
-st.subheader("📈 Sektor-Empfehlungen bei Rezessionsgefahr")
-if p_rezession > 0.6:
-    st.markdown("""
-    Bei hohem Rezessionsrisiko gelten folgende Bereiche als relativ widerstandsfähig:
-
-    - **Basiskonsum (Consumer Staples):** Lebensmittel, Haushaltswaren, Hygieneprodukte  
-      *Beispiele:* Nestlé, Procter & Gamble, Unilever
-    
-    - **Gesundheitswesen (Healthcare):** Medikamente, Krankenhäuser, Medizintechnik  
-      *Beispiele:* Pfizer, Roche, Johnson & Johnson
-
-    - **Versorger (Utilities):** Strom, Wasser, Gas – stabile Einnahmen durch Grundversorgung  
-      *Beispiele:* E.ON, RWE, NextEra Energy
-
-    - **Gold & Edelmetalle:** Stabil in Krisenzeiten – profitieren von Unsicherheit und fallenden Realzinsen
-
-    - **Hochqualitative Staatsanleihen:** Besonders bei erwarteten Zinssenkungen attraktiv
-    """)
-elif p_rezession > 0.3:
-    st.markdown("""
-    Es besteht ein moderates Risiko für eine wirtschaftliche Abschwächung. Folgende Sektoren könnten bereits stabilisierend wirken:
-
-    - **Basiskonsum & Gesundheit:** Erste Umschichtungen in defensivere Titel sind möglich
-    - **Cash & Geldmarkt-ETFs:** Erhöhte Liquidität sorgt für Flexibilität
-    - **Große Technologieunternehmen mit stabilen Erträgen:** z. B. Microsoft, Apple
-    """)
-else:
-    st.markdown("""
-    Derzeit kein akuter Handlungsbedarf. Zyklische Branchen wie Industrie, Technologie und Konsumgüter profitieren bei Wachstum.
-    Dennoch sollte ein schrittweiser Aufbau defensiver Positionen langfristig erwogen werden.
-    """)
-
 # --- Maßnahmen gegen die Rezession ---
 st.markdown("---")
 st.subheader("🛠️ Wirtschaftspolitische Maßnahmen zur Abschwächung einer Rezession")
@@ -211,11 +177,10 @@ maßnahmen = [
 
 for m in maßnahmen:
     if option == "Alle Maßnahmen" or m["priorität"] in option:
-        st.markdown(f"**🛠️ {m['titel']} – Priorität: {m['priorität']}**  ")
-        st.markdown(f"{m['beschreibung']}  ")
-        st.markdown(f"🔄 *Möglicher Effekt auf Aktien:* {m['effekt']}  ")
-        st.markdown(f"📈 *Beispielhafte Profiteure:* {m['aktien']}")}
-")
+        st.markdown(f"**🛠️ {m['titel']} – Priorität: {m['priorität']}**")
+        st.markdown(f"{m['beschreibung']}")
+        st.markdown(f"🔄 *Möglicher Effekt auf Aktien:* {m['effekt']}")
+        st.markdown(f"📈 *Beispielhafte Profiteure:* {m['aktien']}")
 
 # --- Legende und Hinweise ---
 st.markdown("---")
