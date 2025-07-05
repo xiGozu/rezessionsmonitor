@@ -13,7 +13,7 @@ st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
 def fetch_sample_data():
     return pd.read_csv("data/indikatoren.csv", parse_dates=["Datum"])
 
-# --- Prognoseberechnung nach Funktionsdefinition ---
+# --- Prognoseberechnung ---
 df = fetch_sample_data()
 df_model = df.copy()
 df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
@@ -45,3 +45,34 @@ st.markdown(f"""
     <h4 style='margin: 0; color: white;'>{rez_text}</h4>
 </div>
 """, unsafe_allow_html=True)
+
+# --- Indikatorentabelle anzeigen ---
+st.header("Frühwarnindikatoren – Zeitreihe")
+st.dataframe(df.set_index("Datum"))
+
+# --- Bewertung der einzelnen Indikatoren ---
+bewertungen = []
+
+# EMI
+emi_change = df.iloc[-1]["EMI"] - df.iloc[-2]["EMI"]
+emi_bewertung = "🔴 Sinkt deutlich" if emi_change < -1 else ("🟡 Leicht rückläufig" if emi_change < 0 else "🟢 Stabil")
+bewertungen.append(("Einkaufsmanagerindex (EMI)", f"Veränderung: {emi_change:.2f}", emi_bewertung))
+
+# Arbeitslosenquote
+arbeitslosen_diff = df.iloc[-1]["Arbeitslosenquote"] - df.iloc[-2]["Arbeitslosenquote"]
+arbeitslosen_bewertung = "🔴 Steigt deutlich" if arbeitslosen_diff > 0.3 else ("🟡 Steigt leicht" if arbeitslosen_diff > 0.1 else "🟢 Stabil")
+bewertungen.append(("Arbeitslosenquote", f"Veränderung: {arbeitslosen_diff:.2f} %-Punkte", arbeitslosen_bewertung))
+
+# Zinskurve
+zins = df.iloc[-1]["Zinskurve"]
+zins_bewertung = "🔴 Invertiert" if zins < 0 else ("🟡 Flach" if zins < 0.2 else "🟢 Normal")
+bewertungen.append(("Zinskurve", f"Letzter Wert: {zins:.2f}%", zins_bewertung))
+
+# Industrieproduktion
+ip_diff = df.iloc[-1]["Industrieproduktion"] - df.iloc[-2]["Industrieproduktion"]
+ip_bewertung = "🔴 Schrumpft" if ip_diff < -0.5 else ("🟡 Schwächer" if ip_diff < 0 else "🟢 Wächst")
+bewertungen.append(("Industrieproduktion", f"Veränderung: {ip_diff:.2f}%", ip_bewertung))
+
+bewertung_df = pd.DataFrame(bewertungen, columns=["Indikator", "Veränderung / Stand", "Bewertung"])
+st.header("📊 Bewertung der Frühwarnindikatoren")
+st.dataframe(bewertung_df)
