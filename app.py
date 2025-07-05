@@ -96,7 +96,7 @@ maßnahmen = [
         "titel": "Quantitative Lockerung",
         "priorität": "Niedrig",
         "beschreibung": "Zentralbanken kaufen Anleihen oder andere Wertpapiere, um Liquidität ins Finanzsystem zu pumpen.",
-        "effekt": "Höhere Liquidität fließt häufig auch in Aktienmärkte – besonders wachstumsorientierte Titel profitieren.",
+        "effekt": "Höhere Liquidität fließt häufig auch in Aktienmärkte - besonders wachstumsorientierte Titel profitieren.",
         "aktien": "Tech, Growth-ETFs, Nasdaq (z. B. Amazon, Nvidia)"
     }
 ]
