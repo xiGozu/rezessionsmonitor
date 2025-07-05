@@ -172,14 +172,6 @@ bewertung_df = pd.DataFrame({
         "⚠️ negativ – Rückgang" if df['Industrieproduktion'].iloc[-1] < 0 else "✅ positiv"
     ]
 })",
-        f"Letzte 3 Werte: {zins_wert}"
-    ],
-    "Bewertung": [
-        "⚠️ kritisch – 3 Werte unter 48" if emi_kritisch else "✅ stabil",
-        "⚠️ steigend – über 0.5 Punkte" if diff_arbeitslos > 0.5 else "✅ moderat",
-        "⚠️ invers – alle negativ" if zins_invertiert else "✅ normal"
-    ]
-})
 
 st.dataframe(bewertung_df)
 
