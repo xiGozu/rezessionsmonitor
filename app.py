@@ -111,6 +111,24 @@ st.dataframe(df_ma.rename(columns={
     "aktien": "Aktienempfehlungen"
 }))
 
+# --- Frühwarn-Indikatoren ---
+st.markdown("### 🧭 Frühwarn-Indikatoren")
+st.markdown("""
+**1. Einkaufsmanagerindex (EMI)**  
+Ein Wert unter 50 deutet auf schrumpfende wirtschaftliche Aktivität hin.  
+**Rezessionssignal:** Drei aufeinanderfolgende Monate unter 48 gelten als starkes Warnzeichen.
+
+**2. Arbeitslosenquote**  
+Ein ansteigender Trend über mehrere Monate zeigt eine Schwächung des Arbeitsmarktes.  
+**Rezessionssignal:** Steigt die Quote um mehr als 0.5 Prozentpunkte innerhalb von 3-6 Monaten, gilt das als Warnzeichen.
+
+**3. Zinskurve (10J - 2J)**  
+Wenn die kurzfristigen Zinsen höher sind als die langfristigen, spricht man von einer inversen Zinskurve.  
+**Rezessionssignal:** Inversion über einen Zeitraum von mehr als 2 Monaten ist historisch ein verlässliches Frühwarnsignal.
+
+**Hinweis:** Aktuell basieren diese Indikatoren noch auf Beispielwerten. Eine Live-Anbindung ist geplant.
+""")
+
 # --- Legende und Hinweise ---
 st.markdown("---")
 st.caption("Frühwarn-Indikatoren basieren derzeit auf statischen Werten. Live-Integration folgt.")
