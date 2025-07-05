@@ -143,27 +143,34 @@ st.dataframe(verlauf_df.style.format("{:.2f}"))
 # --- Indikatorbewertung ---
 st.markdown("### 🧾 Bewertung der Frühwarn-Indikatoren")
 
-# EMI-Auswertung
+# Indikator-Bewertung berechnen
 emi_wert = df["EMI"].tail(3).tolist()
 emi_kritisch = all(emi < 48 for emi in emi_wert)
-st.markdown(f"**Einkaufsmanagerindex (EMI)**")
-st.markdown(f"Letzte 3 Werte: {emi_wert}")
-st.markdown(f"Bewertung: {'⚠️ kritisch – 3 Werte unter 48' if emi_kritisch else '✅ stabil – kein durchgehendes Unterschreiten'}")
-
-# Arbeitslosenquote-Auswertung
 arbeitslosen_start = df["Arbeitslosenquote"].iloc[-4]
 arbeitslosen_aktuell = df["Arbeitslosenquote"].iloc[-1]
 diff_arbeitslos = arbeitslosen_aktuell - arbeitslosen_start
-st.markdown(f"**Arbeitslosenquote**")
-st.markdown(f"Anstieg in 3 Monaten: {arbeitslosen_start:.2f}% → {arbeitslosen_aktuell:.2f}% ({diff_arbeitslos:+.2f} Prozentpunkte)")
-st.markdown(f"Bewertung: {'⚠️ steigend – Anstieg über 0.5 Punkte' if diff_arbeitslos > 0.5 else '✅ moderat – kein signifikanter Anstieg'}")
-
-# Zinskurve-Auswertung
 zins_wert = df["Zinskurve"].tail(3).tolist()
 zins_invertiert = all(z < 0 for z in zins_wert)
-st.markdown(f"**Zinskurve (10J - 2J)**")
-st.markdown(f"Letzte 3 Werte: {zins_wert}")
-st.markdown(f"Bewertung: {'⚠️ invers – alle 3 Werte negativ' if zins_invertiert else '✅ normal – keine dauerhafte Inversion'}")
+
+bewertung_df = pd.DataFrame({
+    "Indikator": [
+        "Einkaufsmanagerindex (EMI)",
+        "Arbeitslosenquote",
+        "Zinskurve (10J - 2J)"
+    ],
+    "Details": [
+        f"Letzte 3 Werte: {emi_wert}",
+        f"Anstieg 3 Monate: {arbeitslosen_start:.2f}% → {arbeitslosen_aktuell:.2f}% ({diff_arbeitslos:+.2f})",
+        f"Letzte 3 Werte: {zins_wert}"
+    ],
+    "Bewertung": [
+        "⚠️ kritisch – 3 Werte unter 48" if emi_kritisch else "✅ stabil",
+        "⚠️ steigend – über 0.5 Punkte" if diff_arbeitslos > 0.5 else "✅ moderat",
+        "⚠️ invers – alle negativ" if zins_invertiert else "✅ normal"
+    ]
+})
+
+st.dataframe(bewertung_df)
 
 # --- Legende und Hinweise ---
 st.markdown("---")
