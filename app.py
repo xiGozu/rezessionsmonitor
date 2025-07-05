@@ -7,6 +7,9 @@ from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Rezessionsmonitor", layout="wide")
+st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
+
+# --- Prognoseblock für Kopfzeile ---
 df = fetch_sample_data()
 df_model = df.copy()
 df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
@@ -37,8 +40,6 @@ st.markdown(f"""
     <h4 style='margin: 0;'>{rez_text}</h4>
 </div>
 """, unsafe_allow_html=True)
-
-st.title("🔍 Rezessions-Frühwarnsystem mit Prognose")
 
 # --- Hilfsfunktionen ---
 def fetch_sample_data():
