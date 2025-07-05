@@ -54,7 +54,7 @@ with col1:
     st.markdown("---")
     st.subheader("🧠 Einzelbewertung der Frühwarn-Indikatoren")
     latest = df.iloc[-1]
-    
+
     def bewertung_emi(val):
         if val < 47:
             return "🔴 Kritisch (unter 47)"
@@ -93,3 +93,87 @@ with col1:
     st.markdown(f"**Arbeitslosenquote:** {latest['Arbeitslosenquote']} % → {bewertung_arbeitslosenquote(df['Arbeitslosenquote'])}")
     st.markdown(f"**Zinskurve:** {latest['Zinskurve']} % → {bewertung_zinskurve(latest['Zinskurve'])}")
     st.markdown(f"**Industrieproduktion:** {latest['Industrieproduktion']} % → {bewertung_industrieprod(df['Industrieproduktion'])}")
+
+# --- Spalte 2: Prognose, Risikoampel, Rezessionstermin ---
+with col2:
+    df_model = df.copy()
+    df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
+    features = ["EMI", "Arbeitslosenquote", "Zinskurve"]
+    X = df_model[features]
+    y = df_model["Rezession"]
+    model = LogisticRegression()
+    model.fit(X, y)
+    aktuell = df_model.iloc[-1][features].values.reshape(1, -1)
+    p_rezession = model.predict_proba(aktuell)[0][1]
+
+    st.markdown("### 🔢 Rezessionswahrscheinlichkeit")
+    st.metric(label="Deutschland / Eurozone", value=f"{p_rezession*100:.1f} %")
+
+    st.markdown("### 🚨 Aktuelles Rezessionsrisiko")
+    ampel = "🔴 **Hoch**" if p_rezession > 0.6 else ("🟡 **Mittel**" if p_rezession > 0.3 else "🟢 **Niedrig**")
+    st.markdown(f"<div style='font-size: 24px; font-weight: bold;'>{ampel}</div>", unsafe_allow_html=True)
+
+    st.markdown("### 📅 Erwarteter Rezessionszeitraum")
+    heute = datetime.date.today()
+    if p_rezession > 0.6:
+        prog_date = heute + datetime.timedelta(days=90)
+        st.markdown(f"Eine Rezession ist wahrscheinlich bis **{prog_date.strftime('%B %Y')}**.")
+    elif p_rezession > 0.3:
+        prog_date = heute + datetime.timedelta(days=180)
+        st.markdown(f"Eine Rezession ist möglich bis **{prog_date.strftime('%B %Y')}**, falls sich der Trend verstärkt.")
+    else:
+        st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")
+
+# --- Empfehlungen für rezessionsresistente Sektoren ---
+st.markdown("---")
+st.subheader("📈 Sektor-Empfehlungen bei Rezessionsgefahr")
+if p_rezession > 0.6:
+    st.markdown("""
+    Bei hohem Rezessionsrisiko gelten folgende Bereiche als relativ widerstandsfähig:
+
+    - **Basiskonsum (Consumer Staples):** Lebensmittel, Haushaltswaren, Hygieneprodukte  
+      *Beispiele:* Nestlé, Procter & Gamble, Unilever
+    
+    - **Gesundheitswesen (Healthcare):** Medikamente, Krankenhäuser, Medizintechnik  
+      *Beispiele:* Pfizer, Roche, Johnson & Johnson
+
+    - **Versorger (Utilities):** Strom, Wasser, Gas – stabile Einnahmen durch Grundversorgung  
+      *Beispiele:* E.ON, RWE, NextEra Energy
+
+    - **Gold & Edelmetalle:** Stabil in Krisenzeiten – profitieren von Unsicherheit und fallenden Realzinsen
+
+    - **Hochqualitative Staatsanleihen:** Besonders bei erwarteten Zinssenkungen attraktiv
+    """)
+elif p_rezession > 0.3:
+    st.markdown("""
+    Es besteht ein moderates Risiko für eine wirtschaftliche Abschwächung. Folgende Sektoren könnten bereits stabilisierend wirken:
+
+    - **Basiskonsum & Gesundheit:** Erste Umschichtungen in defensivere Titel sind möglich
+    - **Cash & Geldmarkt-ETFs:** Erhöhte Liquidität sorgt für Flexibilität
+    - **Große Technologieunternehmen mit stabilen Erträgen:** z. B. Microsoft, Apple
+    """)
+else:
+    st.markdown("""
+    Derzeit kein akuter Handlungsbedarf. Zyklische Branchen wie Industrie, Technologie und Konsumgüter profitieren bei Wachstum.
+    Dennoch sollte ein schrittweiser Aufbau defensiver Positionen langfristig erwogen werden.
+    """)
+
+# --- Maßnahmen gegen die Rezession ---
+st.markdown("---")
+st.subheader("🛠️ Wirtschaftspolitische Maßnahmen zur Abschwächung einer Rezession")
+st.markdown("""
+Um eine drohende Rezession abzumildern oder zu verzögern, kommen insbesondere folgende Maßnahmen infrage:
+
+- **Senkung der Leitzinsen (Geldpolitik):** Zentralbanken können die Kreditkosten senken, um Investitionen und Konsum anzuregen.
+- **Quantitative Lockerung:** Zentralbanken kaufen Anleihen oder andere Wertpapiere, um Liquidität ins Finanzsystem zu pumpen.
+- **Steuersenkungen:** Durch mehr verfügbares Einkommen können private Haushalte und Unternehmen mehr konsumieren oder investieren.
+- **Staatliche Investitionsprogramme:** Infrastrukturprojekte, Digitalisierung oder Energieprojekte schaffen kurzfristig Nachfrage und Arbeitsplätze.
+- **Kurzarbeitergeld und Arbeitsmarktprogramme:** Sichern Beschäftigung und verhindern massive Kaufkraftverluste.
+- **Unterstützung für Unternehmen:** Kredite, Bürgschaften oder Zuschüsse zur Stabilisierung gefährdeter Branchen.
+
+Diese Maßnahmen werden häufig kombiniert, um die gesamtwirtschaftliche Nachfrage gezielt zu stützen.
+""")
+
+# --- Legende und Hinweise ---
+st.markdown("---")
+st.caption("Frühwarn-Indikatoren basieren derzeit auf statischen Werten. Live-Integration folgt.")
