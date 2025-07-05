@@ -42,12 +42,9 @@ if p_rezession > 0.6:
 
 
 
+color = "#d9534f" if "🔴" in ampel else ("#f0ad4e" if "🟡" in ampel else "#5cb85c")
 st.markdown(f"""
-<div style='display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: #f5f5f5; border-radius: 10px;'>
-    <h2 style='margin: 0;'>🚦 Aktuelles Rezessionsrisiko: {ampel}</h2>
-    <h4 style='margin: 0;'>{rez_text}</h4>
-</div>
-""", unsafe_allow_html=True)
+<div style='display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: {color}; border-radius: 10px;'>
 
 # --- Layout: Zwei Spalten für Übersichtlichkeit ---
 col1, col2 = st.columns([1, 1])
