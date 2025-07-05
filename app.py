@@ -142,22 +142,28 @@ st.dataframe(verlauf_df.style.format("{:.2f}"))
 
 # --- Indikatorbewertung ---
 st.markdown("### 🧾 Bewertung der Frühwarn-Indikatoren")
-bewertung = []
 
 # EMI-Auswertung
-emi_kritisch = (df["EMI"].tail(3) < 48).all()
-bewertung.append(f"**Einkaufsmanagerindex (EMI):** {'⚠️ kritisch' if emi_kritisch else '✅ stabil'}  ")
+emi_wert = df["EMI"].tail(3).tolist()
+emi_kritisch = all(emi < 48 for emi in emi_wert)
+st.markdown(f"**Einkaufsmanagerindex (EMI)**")
+st.markdown(f"Letzte 3 Werte: {emi_wert}")
+st.markdown(f"Bewertung: {'⚠️ kritisch – 3 Werte unter 48' if emi_kritisch else '✅ stabil – kein durchgehendes Unterschreiten'}")
 
 # Arbeitslosenquote-Auswertung
-diff_arbeitslos = df["Arbeitslosenquote"].iloc[-1] - df["Arbeitslosenquote"].iloc[-4]
-bewertung.append(f"**Arbeitslosenquote:** {'⚠️ steigend' if diff_arbeitslos > 0.5 else '✅ moderat'}  ")
+arbeitslosen_start = df["Arbeitslosenquote"].iloc[-4]
+arbeitslosen_aktuell = df["Arbeitslosenquote"].iloc[-1]
+diff_arbeitslos = arbeitslosen_aktuell - arbeitslosen_start
+st.markdown(f"**Arbeitslosenquote**")
+st.markdown(f"Anstieg in 3 Monaten: {arbeitslosen_start:.2f}% → {arbeitslosen_aktuell:.2f}% ({diff_arbeitslos:+.2f} Prozentpunkte)")
+st.markdown(f"Bewertung: {'⚠️ steigend – Anstieg über 0.5 Punkte' if diff_arbeitslos > 0.5 else '✅ moderat – kein signifikanter Anstieg'}")
 
 # Zinskurve-Auswertung
-zins_invertiert = (df["Zinskurve"].tail(3) < 0).all()
-bewertung.append(f"**Zinskurve:** {'⚠️ invers' if zins_invertiert else '✅ normal'}  ")
-
-for b in bewertung:
-    st.markdown(b)
+zins_wert = df["Zinskurve"].tail(3).tolist()
+zins_invertiert = all(z < 0 for z in zins_wert)
+st.markdown(f"**Zinskurve (10J - 2J)**")
+st.markdown(f"Letzte 3 Werte: {zins_wert}")
+st.markdown(f"Bewertung: {'⚠️ invers – alle 3 Werte negativ' if zins_invertiert else '✅ normal – keine dauerhafte Inversion'}")
 
 # --- Legende und Hinweise ---
 st.markdown("---")
