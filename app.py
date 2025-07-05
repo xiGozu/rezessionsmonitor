@@ -51,71 +51,45 @@ with col1:
     **Rezessionssignal:** Wenn der Wert drei Monate in Folge negativ ist (unter 0 %), ist dies ein starkes Alarmsignal.
     """)
 
-# --- Spalte 2: Prognose, Risikoampel, Rezessionstermin ---
-with col2:
-    # --- Prognosemodell ---
-    df_model = df.copy()
-    df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
-    features = ["EMI", "Arbeitslosenquote", "Zinskurve"]
-    X = df_model[features]
-    y = df_model["Rezession"]
-    model = LogisticRegression()
-    model.fit(X, y)
-    aktuell = df_model.iloc[-1][features].values.reshape(1, -1)
-    p_rezession = model.predict_proba(aktuell)[0][1]
-
-    st.markdown("### 🔢 Rezessionswahrscheinlichkeit")
-    st.metric(label="Deutschland / Eurozone", value=f"{p_rezession*100:.1f} %")
-
-    st.markdown("### 🚨 Aktuelles Rezessionsrisiko")
-    ampel = "🔴 **Hoch**" if p_rezession > 0.6 else ("🟡 **Mittel**" if p_rezession > 0.3 else "🟢 **Niedrig**")
-    st.markdown(f"<div style='font-size: 24px; font-weight: bold;'>{ampel}</div>", unsafe_allow_html=True)
-
-    st.markdown("### 📅 Erwarteter Rezessionszeitraum")
-    heute = datetime.date.today()
-    if p_rezession > 0.6:
-        prog_date = heute + datetime.timedelta(days=90)
-        st.markdown(f"Eine Rezession ist wahrscheinlich bis **{prog_date.strftime('%B %Y')}**.")
-    elif p_rezession > 0.3:
-        prog_date = heute + datetime.timedelta(days=180)
-        st.markdown(f"Eine Rezession ist möglich bis **{prog_date.strftime('%B %Y')}**, falls sich der Trend verstärkt.")
-    else:
-        st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")
-
-# --- Empfehlungen für rezessionsresistente Sektoren ---
-st.markdown("---")
-st.subheader("📈 Sektor-Empfehlungen bei Rezessionsgefahr")
-if p_rezession > 0.6:
-    st.markdown("""
-    Bei hohem Rezessionsrisiko gelten folgende Bereiche als relativ widerstandsfähig:
-
-    - **Basiskonsum (Consumer Staples):** Lebensmittel, Haushaltswaren, Hygieneprodukte  
-      *Beispiele:* Nestlé, Procter & Gamble, Unilever
+    st.markdown("---")
+    st.subheader("🧠 Einzelbewertung der Frühwarn-Indikatoren")
+    latest = df.iloc[-1]
     
-    - **Gesundheitswesen (Healthcare):** Medikamente, Krankenhäuser, Medizintechnik  
-      *Beispiele:* Pfizer, Roche, Johnson & Johnson
+    def bewertung_emi(val):
+        if val < 47:
+            return "🔴 Kritisch (unter 47)"
+        elif val < 50:
+            return "🟡 Schwächephase (unter 50)"
+        else:
+            return "🟢 Stabil"
 
-    - **Versorger (Utilities):** Strom, Wasser, Gas – stabile Einnahmen durch Grundversorgung  
-      *Beispiele:* E.ON, RWE, NextEra Energy
+    def bewertung_arbeitslosenquote(series):
+        delta = series.iloc[-1] - series.iloc[-4]  # Änderung über 3 Monate
+        if delta > 0.5:
+            return f"🔴 Anstieg um {delta:.2f} % → Warnsignal"
+        elif delta > 0.2:
+            return f"🟡 Leichter Anstieg ({delta:.2f} %)"
+        else:
+            return f"🟢 Stabil ({delta:.2f} %)"
 
-    - **Gold & Edelmetalle:** Stabil in Krisenzeiten – profitieren von Unsicherheit und fallenden Realzinsen
+    def bewertung_zinskurve(val):
+        if val < -0.25:
+            return "🔴 Invertiert (Rezessionssignal)"
+        elif val < 0:
+            return "🟡 Leicht negativ"
+        else:
+            return "🟢 Normal"
 
-    - **Hochqualitative Staatsanleihen:** Besonders bei erwarteten Zinssenkungen attraktiv
-    """)
-elif p_rezession > 0.3:
-    st.markdown("""
-    Es besteht ein moderates Risiko für eine wirtschaftliche Abschwächung. Folgende Sektoren könnten bereits stabilisierend wirken:
+    def bewertung_industrieprod(series):
+        negatives = (series < 0).tail(3).sum()
+        if negatives == 3:
+            return "🔴 Drei Monate negativ"
+        elif negatives >= 1:
+            return f"🟡 {negatives}x negativ"
+        else:
+            return "🟢 Stabil"
 
-    - **Basiskonsum & Gesundheit:** Erste Umschichtungen in defensivere Titel sind möglich
-    - **Cash & Geldmarkt-ETFs:** Erhöhte Liquidität sorgt für Flexibilität
-    - **Große Technologieunternehmen mit stabilen Erträgen:** z. B. Microsoft, Apple
-    """)
-else:
-    st.markdown("""
-    Derzeit kein akuter Handlungsbedarf. Zyklische Branchen wie Industrie, Technologie und Konsumgüter profitieren bei Wachstum.
-    Dennoch sollte ein schrittweiser Aufbau defensiver Positionen langfristig erwogen werden.
-    """)
-
-# --- Legende und Hinweise ---
-st.markdown("---")
-st.caption("Frühwarn-Indikatoren basieren derzeit auf statischen Werten. Live-Integration folgt.")
+    st.markdown(f"**EMI:** {latest['EMI']} → {bewertung_emi(latest['EMI'])}")
+    st.markdown(f"**Arbeitslosenquote:** {latest['Arbeitslosenquote']} % → {bewertung_arbeitslosenquote(df['Arbeitslosenquote'])}")
+    st.markdown(f"**Zinskurve:** {latest['Zinskurve']} % → {bewertung_zinskurve(latest['Zinskurve'])}")
+    st.markdown(f"**Industrieproduktion:** {latest['Industrieproduktion']} % → {bewertung_industrieprod(df['Industrieproduktion'])}")
