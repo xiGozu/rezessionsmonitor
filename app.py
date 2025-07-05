@@ -171,7 +171,7 @@ bewertung_df = pd.DataFrame({
         "⚠️ invers – alle negativ" if zins_invertiert else "✅ normal",
         "⚠️ negativ – Rückgang" if df['Industrieproduktion'].iloc[-1] < 0 else "✅ positiv"
     ]
-})",
+})
 
 st.dataframe(bewertung_df)
 
