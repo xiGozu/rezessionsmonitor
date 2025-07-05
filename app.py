@@ -22,66 +22,57 @@ def fetch_sample_data():
     })
     return data
 
-# --- Frühwarn-Indikatoren ---
-st.subheader("Frühwarn-Indikatoren")
-df = fetch_sample_data()
-st.dataframe(df.set_index("Datum"))
+# --- Layout: Zwei Spalten für Übersichtlichkeit ---
+col1, col2 = st.columns([1, 1])
 
-# --- Erläuterung der Frühwarn-Indikatoren ---
-st.markdown("""
-### 📘 Beschreibung der Frühwarn-Indikatoren
+# --- Spalte 1: Indikatoren & Beschreibung ---
+with col1:
+    st.subheader("📊 Frühwarn-Indikatoren")
+    df = fetch_sample_data()
+    st.dataframe(df.set_index("Datum"))
 
-**EMI (Einkaufsmanagerindex):**  
-Ein zentraler Frühindikator für die wirtschaftliche Aktivität in der Industrie. Werte über 50 signalisieren Expansion, Werte unter 50 Schrumpfung.  
-**Rezessionssignal:** Bei einem anhaltenden Rückgang unter 47 über mehrere Monate steigt die Rezessionswahrscheinlichkeit deutlich.
+    st.markdown("""
+    #### 📘 Beschreibung der Frühwarn-Indikatoren
 
-**Arbeitslosenquote:**  
-Gibt den prozentualen Anteil der arbeitslosen Personen an der Erwerbsbevölkerung an. Ein konstanter Anstieg über mehrere Monate signalisiert wirtschaftliche Schwäche.  
-**Rezessionssignal:** Steigt die Quote um mehr als 0,5 Prozentpunkte innerhalb von 3–6 Monaten, gilt das als Warnzeichen.
+    **EMI (Einkaufsmanagerindex):** Werte < 47 deuten auf Rezession hin.  
+    **Arbeitslosenquote:** +0,5 % in wenigen Monaten = Warnsignal.  
+    **Zinskurve:** < -0,25 % für längere Zeit = starkes Rezessionssignal.  
+    **Industrieproduktion:** Drei Monate unter 0 % = erhöhtes Risiko.
+    """)
 
-**Zinskurve (10J - 2J Staatsanleihen):**  
-Differenz zwischen langfristigen und kurzfristigen Zinssätzen. Eine normale Kurve ist positiv (langfristige Zinsen höher). Eine inverse Zinskurve (negative Werte) zeigt, dass Investoren kurzfristig höhere Risiken sehen.  
-**Rezessionssignal:** Eine invertierte Kurve über mehrere Wochen (z. B. < -0,25 %) war in der Vergangenheit ein sehr verlässlicher Frühindikator.
+# --- Spalte 2: Prognose, Risikoampel, Rezessionstermin ---
+with col2:
+    # --- Prognosemodell ---
+    df_model = df.copy()
+    df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
+    features = ["EMI", "Arbeitslosenquote", "Zinskurve"]
+    X = df_model[features]
+    y = df_model["Rezession"]
+    model = LogisticRegression()
+    model.fit(X, y)
+    aktuell = df_model.iloc[-1][features].values.reshape(1, -1)
+    p_rezession = model.predict_proba(aktuell)[0][1]
 
-**Industrieproduktion (Veränderung ggü. Vorjahr):**  
-Misst die reale Produktion der Industrie im Vergleich zum Vorjahresmonat. Rückgänge deuten auf sinkende Nachfrage und reduzierte Wirtschaftstätigkeit hin.  
-**Rezessionssignal:** Wenn der Wert drei Monate in Folge negativ ist (unter 0 %), ist dies ein starkes Alarmsignal.
-""")
+    st.markdown("### 🔢 Rezessionswahrscheinlichkeit")
+    st.metric(label="Deutschland / Eurozone", value=f"{p_rezession*100:.1f} %")
 
-# --- Prognosemodell (vereinfachtes Beispiel) ---
-df_model = df.copy()
-df_model["Rezession"] = (df_model["Industrieproduktion"] < 0).astype(int)
-features = ["EMI", "Arbeitslosenquote", "Zinskurve"]
-X = df_model[features]
-y = df_model["Rezession"]
-model = LogisticRegression()
-model.fit(X, y)
+    st.markdown("### 🚨 Aktuelles Rezessionsrisiko")
+    ampel = "🔴 **Hoch**" if p_rezession > 0.6 else ("🟡 **Mittel**" if p_rezession > 0.3 else "🟢 **Niedrig**")
+    st.markdown(f"<div style='font-size: 24px; font-weight: bold;'>{ampel}</div>", unsafe_allow_html=True)
 
-# Aktuelle Werte zur Prognose
-aktuell = df_model.iloc[-1][features].values.reshape(1, -1)
-p_rezession = model.predict_proba(aktuell)[0][1]
-
-st.subheader("🔢 Rezessionswahrscheinlichkeit")
-st.metric(label="Deutschland / Eurozone (vereinfachtes Modell)", value=f"{p_rezession*100:.1f} %", delta=None)
-
-# --- Ampelanzeige ---
-st.subheader("🚨 Risikobewertung")
-ampel = "🔴 Hoch" if p_rezession > 0.6 else ("🟡 Mittel" if p_rezession > 0.3 else "🟢 Niedrig")
-st.markdown(f"**Aktuelles Rezessionsrisiko:** {ampel}")
-
-# --- Zeitprognose für mögliche nächste Rezession ---
-st.subheader("📅 Geschätzter Zeitpunkt einer möglichen Rezession")
-heute = datetime.date.today()
-if p_rezession > 0.6:
-    prog_date = heute + datetime.timedelta(days=90)
-    st.markdown(f"Basierend auf den aktuellen Daten ist eine Rezession bis **{prog_date.strftime('%B %Y')}** wahrscheinlich.")
-elif p_rezession > 0.3:
-    prog_date = heute + datetime.timedelta(days=180)
-    st.markdown(f"Eine Rezession ist möglich bis **{prog_date.strftime('%B %Y')}**, falls sich der Trend verstärkt.")
-else:
-    st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")
+    st.markdown("### 📅 Erwarteter Rezessionszeitraum")
+    heute = datetime.date.today()
+    if p_rezession > 0.6:
+        prog_date = heute + datetime.timedelta(days=90)
+        st.markdown(f"Eine Rezession ist wahrscheinlich bis **{prog_date.strftime('%B %Y')}**.")
+    elif p_rezession > 0.3:
+        prog_date = heute + datetime.timedelta(days=180)
+        st.markdown(f"Eine Rezession ist möglich bis **{prog_date.strftime('%B %Y')}**, falls sich der Trend verstärkt.")
+    else:
+        st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")
 
 # --- Empfehlungen für rezessionsresistente Sektoren ---
+st.markdown("---")
 st.subheader("📈 Sektor-Empfehlungen bei Rezessionsgefahr")
 if p_rezession > 0.6:
     st.markdown("""
