@@ -122,7 +122,7 @@ elif p_rezession > 0.3:
     prog_date = heute + datetime.timedelta(days=180)
     st.markdown(f"Eine Rezession ist möglich bis **{prog_date.strftime('%B %Y')}**, falls sich der Trend verstärkt.")
 else:
-    st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")")
+    st.markdown("Aktuell keine konkrete Rezession in Sicht – jedoch Beobachtung empfohlen.")
 
 # --- Maßnahmen gegen die Rezession ---
 st.markdown("---")
