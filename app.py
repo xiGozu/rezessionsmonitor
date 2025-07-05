@@ -52,11 +52,10 @@ st.dataframe(df.set_index("Datum"))
 
 st.markdown("""
 ### Was bedeuten die Indikatoren?
-- **Einkaufsmanagerindex (EMI):** Ein Wert unter 50 signalisiert Schrumpfung. Ein starker Rückgang ist oft ein Frühindikator.
-- **Arbeitslosenquote:** Steigt sie innerhalb weniger Monate um 0,5 % oder mehr, deutet das oft auf eine bevorstehende Rezession hin.
-- **Zinskurve (10y - 2y):** Eine Inversion (negativer Wert) ist in der Vergangenheit häufig ein zuverlässiger Frühindikator gewesen.
-- **Industrieproduktion:** Rückläufige Produktionszahlen deuten auf eine konjunkturelle Schwächephase hin.
-""")
+- **Einkaufsmanagerindex (EMI):** Dieser Index basiert auf Umfragen unter Einkaufsleitern der Industrie. Werte über 50 deuten auf Expansion hin, Werte unter 50 auf Schrumpfung. Ein abrupter Rückgang kann auf eine konjunkturelle Eintrübung hinweisen.
+- **Arbeitslosenquote:** Misst den Anteil der Erwerbslosen an der zivilen Erwerbsbevölkerung. Ein starker Anstieg innerhalb weniger Monate signalisiert nachlassende Wirtschaftsaktivität. Eine Erhöhung von mehr als 0,5 Prozentpunkten in kurzer Zeit gilt als Warnsignal.
+- **Zinskurve (10y - 2y):** Differenz zwischen langfristigen und kurzfristigen Staatsanleihen. Eine negative Zinskurve („Inversion“) bedeutet, dass Anleger kurzfristig höhere Renditen verlangen als langfristig – oft ein Vorbote einer Rezession.
+- **Industrieproduktion:** Zeigt die reale Produktion der Industrie. Ein Rückgang deutet auf eine Abschwächung der Nachfrage und wirtschaftlichen Rückgang hin. Besonders relevant sind mehrmonatige Trends.
 
 # --- Bewertung der einzelnen Indikatoren ---
 bewertungen = []
@@ -78,8 +77,15 @@ ip_bewertung = "🔴 Schrumpft" if ip_diff < -0.5 else ("🟡 Schwächer" if ip_
 bewertungen.append(("Industrieproduktion", f"Veränderung: {ip_diff:.2f}%", ip_bewertung))
 
 bewertung_df = pd.DataFrame(bewertungen, columns=["Indikator", "Veränderung / Stand", "Bewertung"])
-st.header("📊 Bewertung der Frühwarnindikatoren")
+st.header("📊 Bewertung und Interpretation der Frühwarnindikatoren")
 st.dataframe(bewertung_df)
+
+st.markdown("""
+#### Hinweise zur Bewertungsskala:
+- 🔴 **Kritisch**: Historisch oft mit Rezession assoziiert, schnelle Gegenmaßnahmen ratsam
+- 🟡 **Abnehmende Dynamik**: Trendbeobachtung erforderlich, könnte in kritische Zone kippen
+- 🟢 **Unauffällig**: Keine akuten Anzeichen einer wirtschaftlichen Abschwächung
+""")
 
 # --- Maßnahmen gegen Rezession ---
 st.header("🛠️ Mögliche staatliche Gegenmaßnahmen & Auswirkungen auf Aktien")
