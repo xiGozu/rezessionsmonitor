@@ -5,7 +5,7 @@ JSON: {"nr":"2026041","datum":"07.10.2026",
        "empfaenger":["Firma","Strasse","PLZ Ort"],
        "objekt":["Strasse","Ort"],
        "positionen":[{"anzahl":24,"einheit":"Std.","text":"Trockenbauarbeiten","preis":45.0}],
-       "mwst":19, "out":"Rechnung_2026041_Firma.docx"}
+       "mwst":19 (oder "mwst_betrag":55.5 fuer festen MwSt-Betrag), "out":"Rechnung_2026041_Firma.docx"}
 Positionen sind Netto; Summe/MwSt/Brutto werden berechnet."""
 import json,re,sys,zipfile,os
 here=os.path.dirname(os.path.abspath(__file__))
@@ -38,9 +38,9 @@ body='';netto=0
 for i,p in enumerate(cfg['positionen']):
     g=round(p['anzahl']*p['preis'],2);netto+=g
     body+=settexts(shaded if i%2==0 else plain,[str(i+1),num(p['anzahl']),p['einheit'],p['text'],eur(p['preis']),eur(g)])
-mw=round(netto*cfg.get('mwst',19)/100,2)
+mw=cfg['mwst_betrag'] if 'mwst_betrag' in cfg else round(netto*cfg.get('mwst',19)/100,2)
 body+=settexts(summe,['','','','Summe (netto)','',eur(netto)])
-body+=settexts(summe,['','','','zzgl. %g %% MwSt.'%cfg.get('mwst',19),'',eur(mw)])
+body+=settexts(summe,['','','',('zzgl. MwSt.' if 'mwst_betrag' in cfg else 'zzgl. %g %% MwSt.'%cfg.get('mwst',19)),'',eur(mw)])
 body+=settexts(ges,['','','','Gesamtbetrag (brutto):','',eur(netto+mw)])
 d=d[:ts]+tbl[:tbl.index(rows[0])]+hdr+body+d[te:]
 out=cfg.get('out','Rechnung_%s.docx'%cfg['nr'])
