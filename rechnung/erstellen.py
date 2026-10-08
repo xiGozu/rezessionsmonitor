@@ -40,7 +40,7 @@ for i,p in enumerate(cfg['positionen']):
     body+=settexts(shaded if i%2==0 else plain,[str(i+1),num(p['anzahl']),p['einheit'],p['text'],eur(p['preis']),eur(g)])
 mw=cfg['mwst_betrag'] if 'mwst_betrag' in cfg else round(netto*cfg.get('mwst',19)/100,2)
 body+=settexts(summe,['','','','Summe (netto)','',eur(netto)])
-body+=settexts(summe,['','','',('zzgl. MwSt.' if 'mwst_betrag' in cfg else 'zzgl. %g %% MwSt.'%cfg.get('mwst',19)),'',eur(mw)])
+body+=settexts(summe,['','','','zzgl. %g %% MwSt.'%cfg.get('mwst',19),'',eur(mw)])
 body+=settexts(ges,['','','','Gesamtbetrag (brutto):','',eur(netto+mw)])
 d=d[:ts]+tbl[:tbl.index(rows[0])]+hdr+body+d[te:]
 out=cfg.get('out','Rechnung_%s.docx'%cfg['nr'])
