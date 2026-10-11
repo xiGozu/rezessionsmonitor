@@ -20,6 +20,7 @@ Unter Linux wird zusätzlich `python3-tk` benötigt (`sudo apt install python3-t
 
 | Backend | System | Funktionsweise |
 |---|---|---|
+| **DIY-HID-Kerneltreiber** | Windows 10/11 | Eigener Kernel-Treiber (`windows-treiber/`). Windows sieht eine echte HID-Maus und -Tastatur. Installation: siehe [windows-treiber/README.md](windows-treiber/README.md). |
 | **uinput – virtuelles Gerät** | Linux | Legt über `/dev/uinput` zwei echte virtuelle Geräte an („DIY-Eingabegeraet Maus“ / „… Tastatur“). Der Kernel behandelt sie wie angesteckte USB-Geräte, funktioniert auch unter Wayland. |
 | **pynput** | Windows, macOS, Linux/X11 | Sendet Eingaben über die System-API (Windows: `SendInput`). |
 | **Simulation** | überall | Schreibt nur ins Log – zum gefahrlosen Ausprobieren. |
@@ -64,4 +65,5 @@ oder neu programmieren.
 ## Aufbau des Codes
 
 - `treiber.py` – Backends und `Runner` (Ablauf in eigenem Thread, Zufallsintervall, garantiertes Loslassen)
+- `windows-treiber/` – KMDF-Treiber mit Virtual HID Framework, wird per GitHub Actions gebaut
 - `gui.py` – Tkinter-Oberfläche, Status, Countdown bis zum nächsten Tab, Log, Not-Aus

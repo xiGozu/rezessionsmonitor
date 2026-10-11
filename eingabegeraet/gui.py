@@ -5,6 +5,7 @@ Not-Aus: F12 (global, falls pynput verfügbar) oder Esc im Fenster.
 """
 
 import queue
+import sys
 import time
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -133,10 +134,11 @@ class App:
                 tab_enabled=self.tab_var.get(), tab_min=tab_min, tab_max=tab_max,
                 start_delay=delay,
             )
-        except PermissionError:
+        except PermissionError as exc:
             self._close_backend()
-            messagebox.showerror("Rechte fehlen",
-                                 "Kein Zugriff auf /dev/uinput.\nSiehe README: udev-Regel / Gruppe 'input'.")
+            hint = ("GUI als Administrator starten." if sys.platform == "win32"
+                    else "Kein Zugriff auf /dev/uinput.\nSiehe README: udev-Regel / Gruppe 'input'.")
+            messagebox.showerror("Rechte fehlen", f"{exc}\n\n{hint}")
             return
         except Exception as exc:
             self._close_backend()

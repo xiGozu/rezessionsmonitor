@@ -114,6 +114,80 @@ class UinputBackend(Backend):
         self._keyboard.close()
 
 
+class WindowsHidBackend(Backend):
+    """Spricht mit dem eigenen Kernel-Treiber (windows-treiber/, KMDF + VHF).
+
+    Windows sieht dabei eine echte HID-Maus und -Tastatur. Benötigt
+    Administratorrechte, weil der Treiber nur Admins Zugriff gibt.
+    """
+
+    name = "DIY-HID-Kerneltreiber (Windows)"
+    DEVICE_PATH = r"\\.\DiyHid"
+    # CTL_CODE(FILE_DEVICE_UNKNOWN, 0x800, METHOD_BUFFERED, FILE_WRITE_DATA)
+    IOCTL_SUBMIT_REPORT = 0x0022A000
+    MOUSE_BITS = {"left": 0x01, "right": 0x02}
+    HID_TAB = 0x2B
+
+    def __init__(self, log):
+        import ctypes
+        from ctypes import wintypes
+
+        self._ctypes = ctypes
+        k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        k32.CreateFileW.restype = wintypes.HANDLE
+        k32.CreateFileW.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD, wintypes.LPVOID,
+                                    wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE]
+        k32.DeviceIoControl.restype = wintypes.BOOL
+        k32.DeviceIoControl.argtypes = [wintypes.HANDLE, wintypes.DWORD, wintypes.LPVOID, wintypes.DWORD,
+                                        wintypes.LPVOID, wintypes.DWORD, ctypes.POINTER(wintypes.DWORD),
+                                        wintypes.LPVOID]
+        k32.CloseHandle.argtypes = [wintypes.HANDLE]
+        self._k32 = k32
+        self._dword = wintypes.DWORD
+
+        generic_write, open_existing = 0x40000000, 3
+        handle = k32.CreateFileW(self.DEVICE_PATH, generic_write, 0, None, open_existing, 0, None)
+        if handle in (None, wintypes.HANDLE(-1).value):
+            err = ctypes.get_last_error()
+            if err == 5:
+                raise PermissionError("Zugriff verweigert – GUI als Administrator starten.")
+            if err == 2:
+                raise FileNotFoundError("Treiber nicht gefunden – ist DiyHid installiert? (siehe windows-treiber/README.md)")
+            raise ctypes.WinError(err)
+        self._handle = handle
+        self._buttons = 0
+        log("Verbunden mit Kerneltreiber \\\\.\\DiyHid")
+
+    def _send(self, report):
+        buf = self._ctypes.create_string_buffer(bytes(report), len(report))
+        returned = self._dword()
+        if not self._k32.DeviceIoControl(self._handle, self.IOCTL_SUBMIT_REPORT, buf, len(report),
+                                         None, 0, self._ctypes.byref(returned), None):
+            raise self._ctypes.WinError(self._ctypes.get_last_error())
+
+    def _send_mouse(self):
+        self._send([1, self._buttons, 0, 0, 0])
+
+    def press(self, button):
+        self._buttons |= self.MOUSE_BITS[button]
+        self._send_mouse()
+
+    def release(self, button):
+        self._buttons &= ~self.MOUSE_BITS[button]
+        self._send_mouse()
+
+    def tap_tab(self):
+        self._send([2, 0, 0, self.HID_TAB, 0, 0, 0, 0, 0])
+        time.sleep(random.uniform(0.04, 0.09))
+        self._send([2, 0, 0, 0, 0, 0, 0, 0, 0])
+
+    def close(self):
+        # Beim Schließen lässt der Treiber zusätzlich selbst alle Tasten los.
+        if self._handle is not None:
+            self._k32.CloseHandle(self._handle)
+            self._handle = None
+
+
 def _importable(module):
     try:
         __import__(module)
@@ -125,6 +199,8 @@ def _importable(module):
 def available_backends():
     """Liefert {Anzeigename: Klasse} aller auf diesem System nutzbaren Backends."""
     result = {}
+    if platform.system() == "Windows":
+        result[WindowsHidBackend.name] = WindowsHidBackend
     if platform.system() == "Linux" and _importable("evdev"):
         result[UinputBackend.name] = UinputBackend
     if _importable("pynput"):
