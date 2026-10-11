@@ -20,6 +20,12 @@ jobs:
         run: nuget restore .\packages.config -PackagesDirectory .\packages\
 
       - uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x64
+
+      - name: WDK-Werkzeuge anzeigen
+        shell: pwsh
+        run: Get-ChildItem .\packages -Recurse -Filter stampinf.exe | ForEach-Object FullName
 
       - name: Treiber bauen (Release x64, testsigniert)
         run: msbuild .\driver\DiyHid.vcxproj /p:Configuration=Release /p:Platform=x64 /m /v:minimal
