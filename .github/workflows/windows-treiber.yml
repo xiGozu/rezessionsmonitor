@@ -23,20 +23,17 @@ jobs:
         with:
           msbuild-architecture: x64
 
-      - name: WDK-Werkzeuge anzeigen
-        shell: pwsh
-        run: Get-ChildItem .\packages -Recurse -Filter stampinf.exe | ForEach-Object FullName
-
       - name: Treiber bauen (Release x64, testsigniert)
-        run: msbuild .\driver\DiyHid.vcxproj /p:Configuration=Release /p:Platform=x64 /m /v:minimal
+        run: msbuild .\driver\DiyHid.vcxproj /p:Configuration=Release /p:Platform=x64 /m /v:minimal /warnaserror
 
       - name: Treiberpaket zusammenstellen
         shell: pwsh
         run: |
           $out = "..\..\DiyHid-x64"
           New-Item -ItemType Directory -Force $out | Out-Null
-          $pkg = Get-ChildItem -Recurse -Path .\driver\x64\Release -Filter DiyHid.inf | Select-Object -First 1
-          Copy-Item (Join-Path $pkg.DirectoryName '*') $out -Recurse
+          # Fertiges Treiberpaket (sys + inf + cat) liegt in x64\Release\DiyHid\
+          Copy-Item .\driver\x64\Release\DiyHid\* $out
+          Copy-Item .\README.md (Join-Path $out 'ANLEITUNG.md')
           $sig = Get-AuthenticodeSignature (Join-Path $out 'DiyHid.sys')
           if ($sig.SignerCertificate) { Export-Certificate -Cert $sig.SignerCertificate -FilePath (Join-Path $out 'DiyHid-Testzertifikat.cer') | Out-Null }
           Get-ChildItem $out
