@@ -1,0 +1,68 @@
+;
+; DiyHid.inf – virtuelle HID-Maus + Tastatur (KMDF + Virtual HID Framework)
+;
+; Installation: Geräte-Manager / hdwwiz -> "Datenträger..." -> diese INF (siehe README)
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider    = %ProviderString%
+DriverVer   = 01/01/2026,1.0.0.0
+CatalogFile = DiyHid.cat
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+DiyHid.sys = 1,,
+
+[Manufacturer]
+%StdMfg% = Standard,NT$ARCH$.10.0...16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%DiyHid.DeviceDesc% = DiyHid_Device, Root\DiyHid
+
+[DiyHid_Device.NT]
+CopyFiles = Drivers_Dir
+
+[Drivers_Dir]
+DiyHid.sys
+
+; Vhf.sys (Windows-Inbox) muss als Lower-Filter unter diesem Treiber laufen.
+; Security: nur SYSTEM und Administratoren dürfen \\.\DiyHid öffnen.
+[DiyHid_Device.NT.HW]
+AddReg = DiyHid_Device.NT.AddReg
+
+[DiyHid_Device.NT.AddReg]
+HKR,,"LowerFilters",0x00010000,"vhf"
+HKR,,Security,,"D:P(A;;GA;;;SY)(A;;GA;;;BA)"
+
+[DiyHid_Device.NT.Services]
+AddService = DiyHid, %SPSVCINST_ASSOCSERVICE%, DiyHid_Service_Inst
+
+[DiyHid_Service_Inst]
+DisplayName   = %DiyHid.SvcDesc%
+ServiceType   = 1               ; SERVICE_KERNEL_DRIVER
+StartType     = 3               ; SERVICE_DEMAND_START
+ErrorControl  = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary = %13%\DiyHid.sys
+
+[DiyHid_Device.NT.Wdf]
+KmdfService = DiyHid, DiyHid_wdfsect
+
+[DiyHid_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ProviderString         = "DIY-Eingabegeraet"
+StdMfg                 = "DIY-Eingabegeraet"
+DiskName               = "DiyHid Installationsdatentraeger"
+DiyHid.DeviceDesc      = "DIY-Eingabegeraet (virtuelle Maus + Tastatur)"
+DiyHid.SvcDesc         = "DIY-Eingabegeraet HID-Quelltreiber"

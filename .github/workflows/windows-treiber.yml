@@ -1,0 +1,41 @@
+name: Windows-Treiber bauen (DiyHid)
+
+on:
+  push:
+    paths:
+      - 'eingabegeraet/windows-treiber/**'
+      - '.github/workflows/windows-treiber.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+    defaults:
+      run:
+        working-directory: eingabegeraet/windows-treiber
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: WDK + SDK per NuGet installieren
+        run: nuget restore .\packages.config -PackagesDirectory .\packages\
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Treiber bauen (Release x64, testsigniert)
+        run: msbuild .\driver\DiyHid.vcxproj /p:Configuration=Release /p:Platform=x64 /m /v:minimal
+
+      - name: Treiberpaket zusammenstellen
+        shell: pwsh
+        run: |
+          $out = "..\..\DiyHid-x64"
+          New-Item -ItemType Directory -Force $out | Out-Null
+          $pkg = Get-ChildItem -Recurse -Path .\driver\x64\Release -Filter DiyHid.inf | Select-Object -First 1
+          Copy-Item (Join-Path $pkg.DirectoryName '*') $out -Recurse
+          $sig = Get-AuthenticodeSignature (Join-Path $out 'DiyHid.sys')
+          if ($sig.SignerCertificate) { Export-Certificate -Cert $sig.SignerCertificate -FilePath (Join-Path $out 'DiyHid-Testzertifikat.cer') | Out-Null }
+          Get-ChildItem $out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DiyHid-x64
+          path: DiyHid-x64
